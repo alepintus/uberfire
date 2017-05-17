@@ -40,7 +40,7 @@ public class TreeItem<I extends TreeItem> extends Composite {
     private Tree<TreeItem> tree;
     private Object userObject;
     private TreeItem parent;
-    private State state = State.NONE;
+    private State state;
     private String label;
     private String uuid;
     private boolean isSelected = false;
@@ -57,6 +57,7 @@ public class TreeItem<I extends TreeItem> extends Composite {
              icon,
              FlowPanel::new);
     }
+
     TreeItem(final Type type,
              final String value,
              final String label,
@@ -69,6 +70,7 @@ public class TreeItem<I extends TreeItem> extends Composite {
                                  type);
 
         if (type.equals(Type.CONTAINER) || type.equals(Type.ROOT)) {
+            this.state = State.CLOSE;
             //final FlowPanel folder = new FlowPanel();
             final FlowPanel folder = contentProvider.get();
             folder.setStylePrimaryName(TreeNavigatorResources.INSTANCE.css().treeFolder());
@@ -119,6 +121,7 @@ public class TreeItem<I extends TreeItem> extends Composite {
                 initWidget(folder);
             }
         } else if (type.equals(Type.ITEM)) {
+            this.state = State.NONE;
             //this.item = new FlowPanel();
             this.item = contentProvider.get();
             item.setStylePrimaryName(TreeNavigatorResources.INSTANCE.css().treeItem());

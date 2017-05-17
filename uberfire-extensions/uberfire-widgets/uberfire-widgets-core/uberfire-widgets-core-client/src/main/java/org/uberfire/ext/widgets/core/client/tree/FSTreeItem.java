@@ -28,7 +28,7 @@ public class FSTreeItem extends TreeItem<FSTreeItem> {
 
     private final FSType fstype;
 
-    public FSTreeItem(final FSType type,
+    FSTreeItem(final FSType type,
                       final String value,
                       final Supplier<FlowPanel> contentProvider) {
         super(createType(type),

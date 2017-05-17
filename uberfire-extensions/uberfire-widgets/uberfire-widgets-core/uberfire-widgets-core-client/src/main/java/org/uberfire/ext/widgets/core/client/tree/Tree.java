@@ -44,7 +44,7 @@ public class Tree<T extends TreeItem> extends Composite implements HasSelectionH
         this(FlowPanel::new);
     }
 
-    public Tree(final Supplier<FlowPanel> containerProvider) {
+    Tree(final Supplier<FlowPanel> containerProvider) {
         container = containerProvider.get();
         initWidget(container);
         container.setStylePrimaryName(TreeNavigatorResources.INSTANCE.css().tree());
