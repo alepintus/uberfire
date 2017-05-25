@@ -121,7 +121,6 @@ public class TreeItem<I extends TreeItem> extends Composite {
                 initWidget(folder);
             }
         } else if (type.equals(Type.ITEM)) {
-            //this.item = new FlowPanel();
             this.state = State.NONE;
             this.item = contentProvider.get();
             item.setStylePrimaryName(TreeNavigatorResources.INSTANCE.css().treeItem());

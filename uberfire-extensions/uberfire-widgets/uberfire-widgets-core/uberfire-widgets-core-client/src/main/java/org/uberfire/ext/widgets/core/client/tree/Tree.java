@@ -18,6 +18,8 @@ package org.uberfire.ext.widgets.core.client.tree;
 
 import java.util.Iterator;
 import java.util.function.Supplier;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
@@ -36,6 +38,7 @@ import org.uberfire.ext.widgets.core.client.resources.TreeNavigatorResources;
 public class Tree<T extends TreeItem> extends Composite implements HasSelectionHandlers<T>,
                                                                    HasOpenHandlers<T>,
                                                                    HasCloseHandlers<T> {
+    private static Logger LOGGER = Logger.getLogger(Tree.class.getName());
 
     private FlowPanel container;
     private T curSelection = null;
@@ -92,6 +95,58 @@ public class Tree<T extends TreeItem> extends Composite implements HasSelectionH
         container.add(item);
         item.setTree(this);
         return item;
+    }
+
+    public TreeItem getItemByUuid(String uuid) {
+        LOGGER.log(Level.SEVERE, "getItemByUuid item :" + uuid);
+
+        TreeItem item = null;
+        final TreeItem rootItem = getItem(0);
+
+        if (rootItem != null) {
+            if (rootItem.getUuid().equals(uuid)) {
+                item = rootItem;
+            } else {
+                item = getItemByUuid(rootItem,
+                                     uuid);
+            }
+        }
+        return item;
+    }
+
+    private TreeItem getItemByUuid(TreeItem parent,
+                                   String uuid) {
+        LOGGER.log(Level.SEVERE, "getItemByUuid with parent "+parent.getUuid() +"item :" + uuid);
+
+        final TreeItem selectedItem[] = new TreeItem[1];
+
+        final TreeItem[] items = new TreeItem[1];
+        final String[] itemUuid = {""};
+
+
+        parent.getChildren().forEach(c -> {
+
+            items[0] = (TreeItem) c;
+            itemUuid[0] = items[0].getUuid();
+
+            if ((selectedItem[0] == null) && (itemUuid[0].equals(uuid))) {
+                selectedItem[0] = items[0];
+            }
+
+            if (selectedItem[0] == null) {
+
+                final boolean[] hasChildren = {false};
+                items[0].getChildren().forEach(i -> {
+                    hasChildren[0] = true;
+                });
+                if (hasChildren[0]) {
+                    selectedItem[0] = getItemByUuid(items[0],
+                                                    uuid);
+                }
+            }
+        });
+        LOGGER.log(Level.SEVERE,"DONE");
+        return selectedItem[0];
     }
 
     public T getItem(int index) {
