@@ -225,12 +225,18 @@ public class TreeItem<I extends TreeItem> extends Composite {
 
     @SuppressWarnings("unchecked")
     public I addItem(final I item) {
-
+        checkContainerType();
         content.add(item);
         item.setTree(tree);
         item.setParent(this);
 
         return item;
+    }
+
+    private void checkContainerType() {
+        if (null == content) {
+            throw new IllegalStateException("This tree item instance is not a container.");
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -239,17 +245,18 @@ public class TreeItem<I extends TreeItem> extends Composite {
                             final String label,
                             final IsWidget icon) {
         final I child = makeChild(type,
-                                         value,
-                                         label,
-                                         icon);
+                                  value,
+                                  label,
+                                  icon);
         addItem(child);
         return child;
     }
 
+    @SuppressWarnings("unchecked")
     private I makeChild(final Type type,
-                               final String value,
-                               final String label,
-                               final IsWidget icon) {
+                        final String value,
+                        final String label,
+                        final IsWidget icon) {
         return (I) new TreeItem(type,
                                 value,
                                 label,
@@ -257,19 +264,21 @@ public class TreeItem<I extends TreeItem> extends Composite {
     }
 
     public void removeItems() {
+        checkContainerType();
         content.clear();
     }
 
     public int getChildCount() {
-        return content.getWidgetCount();
+        return null != content ? content.getWidgetCount() : 0;
     }
 
     @SuppressWarnings("unchecked")
     public I getChild(final int i) {
+        checkContainerType();
         if (i + 1 > content.getWidgetCount()) {
             return null;
         }
-        return (I)content.getWidget(i);
+        return (I) content.getWidget(i);
     }
 
     public Iterable<I> getChildren() {
@@ -321,6 +330,7 @@ public class TreeItem<I extends TreeItem> extends Composite {
     }
 
     public void removeItem(final I treeItem) {
+        checkContainerType();
         content.remove(treeItem);
     }
 
@@ -357,8 +367,13 @@ public class TreeItem<I extends TreeItem> extends Composite {
         }
     }
 
+    @Override
+    public TreeItem getParent() {
+        return parent;
+    }
+
     public boolean isEmpty() {
-        return content.getWidgetCount() == 0;
+        return null == content || content.getWidgetCount() == 0;
     }
 
     IsWidget getIconWidget() {
@@ -379,6 +394,19 @@ public class TreeItem<I extends TreeItem> extends Composite {
         NONE,
         OPEN,
         CLOSE
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof TreeItem)) {
+            return false;
+        }
+        TreeItem that = (TreeItem) other;
+        return getUuid().equals(that.getUuid());
     }
 
     protected static class TreeItemIterator<T> implements Iterator<T> {
